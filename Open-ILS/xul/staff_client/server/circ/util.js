@@ -1896,7 +1896,7 @@ circ.util.checkin_via_barcode = function(session,params,backdate,auto_print,asyn
 					}
 				} catch(E) {
 					JSAN.use('util.error'); var error = new util.error();
-					error.standard_unexpected_error_alert(document.getElementById('circStrings').getFormattedMessage('staff.circ.checkin.error', ['1']), E);
+					error.standard_unexpected_error_alert(document.getElementById('circStrings').getFormattedString('staff.circ.checkin.error', ['1']), E);
 					if (typeof async == 'object') {
 						try { async.enable_textbox(); }
 						catch(E) { error.sdump('D_ERROR','async.disable_textbox() = ' + E); };
@@ -1935,7 +1935,7 @@ circ.util.checkin_via_barcode = function(session,params,backdate,auto_print,asyn
 
 	} catch(E) {
 		JSAN.use('util.error'); var error = new util.error();
-		error.standard_unexpected_error_alert(document.getElementById('circStrings').getFormattedMessage('staff.circ.checkin.error', ['2']), E);
+		error.standard_unexpected_error_alert(document.getElementById('circStrings').getFormattedString('staff.circ.checkin.error', ['2']), E);
 		if (typeof async == 'object') {
 			try { async.enable_textbox(); } catch(E) { error.sdump('D_ERROR','async.disable_textbox() = ' + E); };
 		}
@@ -2243,6 +2243,23 @@ circ.util.checkin_via_barcode2 = function(session,params,backdate,auto_print,che
 				document.getElementById('no_change_label').setAttribute('hidden','false');
 			}
 
+		} else /* HOLD_CAPTURE_DELAYED */ if (check.ilsevent == 7019) {
+
+			var rv = 0;
+			msg += document.getElementById('circStrings').getString('staff.circ.utils.hold_capture_delayed.description');
+			rv = error.yns_alert_formatted(
+				msg,
+				document.getElementById('circStrings').getString('staff.circ.utils.hold_capture_delayed.titlebar'),
+				document.getElementById('circStrings').getString('staff.circ.utils.hold_capture_delayed.prompt_for_nocapture'),
+				document.getElementById('circStrings').getString('staff.circ.utils.hold_capture_delayed.prompt_for_capture'),
+				null,
+				document.getElementById('circStrings').getString('staff.circ.confirm.msg'),
+				'/xul/server/skin/media/images/stop_sign.png'
+			);
+			params.capture = rv == 0 ? 'nocapture' : 'capture';
+
+			return circ.util.checkin_via_barcode(session,params,backdate,auto_print,false); 
+
 		} else /* NETWORK TIMEOUT */ if (check.ilsevent == -1) {
 			error.standard_network_error_alert(document.getElementById('circStrings').getString('staff.circ.checkin.suggest_offline'));
 		} else {
@@ -2268,7 +2285,7 @@ circ.util.checkin_via_barcode2 = function(session,params,backdate,auto_print,che
 		return check;
 	} catch(E) {
 		JSAN.use('util.error'); var error = new util.error();
-		error.standard_unexpected_error_alert(document.getElementById('circStrings').getFormattedMessage('staff.circ.checkin.error', ['3']), E);
+		error.standard_unexpected_error_alert(document.getElementById('circStrings').getFormattedString('staff.circ.checkin.error', ['3']), E);
 		return null;
 	}
 };
@@ -2313,7 +2330,7 @@ circ.util.renew_via_barcode = function ( barcode, patron_id, async ) {
 				return renew;
 			} catch(E) {
 				JSAN.use('util.error'); var error = new util.error();
-				error.standard_unexpected_error_alert(document.getElementById('circStrings').getFormattedMessage('staff.circ.checkin.renew_failed.error', [barcode]), E);
+				error.standard_unexpected_error_alert(document.getElementById('circStrings').getFormattedString('staff.circ.checkin.renew_failed.error', [barcode]), E);
 				return null;
 			}
 		}
